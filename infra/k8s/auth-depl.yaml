@@ -1,0 +1,32 @@
+apiVersion: apps/v1 #deployment object is inside apps
+kind: Deployment #kind of configuration
+metadata:
+  name: auth-depl #name of deployment
+spec:
+  replicas: 1
+  selector: # take a look at all the pods created
+    matchLabels: #find all the pods with the following labels
+      app: auth #label name
+  template: # specifies the configuration of pods to be created
+    metadata:
+      labels: # give the pod the following label
+        app: auth
+    spec: #tells the pod how to behave
+      containers: # run the following containers inside the pod
+        - name: auth
+          image: brandednomad/tickets-service-auth
+---
+# ipcluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-srv #name of service
+spec: # tells service how to behave
+  selector:
+    app: auth #which pod to attach service to
+  type: ClusterIP #type of service
+  ports:
+    - name: auth
+      protocol: TCP
+      port: 3001 #clusterIp port
+      targetPort: 3001 #port specified on the app

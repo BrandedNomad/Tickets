@@ -1,0 +1,22 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/* #skaffold will apply all config files on startup
+build:
+  local:
+    push: false #disable default behaviour
+  artifacts: #images to rebuild when changes occur
+    - image: brandednomad/tickets-service-auth
+      context: auth # tells skaffold that their is a pod running  code out of this folder in file directory, and to rebuild images if something changes inside of this directory and update the pod
+      docker:
+        dockerfile: Dockerfile
+      sync: #tells skaffold what to do when a file changes
+        manual:
+          - src: 'src/**/*.ts' #if ts file changes skaffold will attempt to copy it into the running pod without rebuilding an image
+            dest: .
+
+
+
+
