@@ -28,5 +28,5 @@ spec: # tells service how to behave
   ports:
     - name: auth
       protocol: TCP
-      port: 3001 #clusterIp port
-      targetPort: 3001 #port specified on the app
+      port: 4001 #clusterIp port
+      targetPort: 4001 #port specified on the app

@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true" #allows for the use of regular expressions
+spec:
+  rules: #Routing Rules
+    - host: myticket.dev #internal domain inside of kubernetes cluster (redirects to localhost configured inside of C:\Windows\System32\Drivers\etc\hosts)
+      http:
+        paths: #NOTE: ingress cannot route based on POST/GET/PATCH etc, need unique routes
+          - path: /api/users/?(.*) #Whenever a request is made to this path
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-srv #route request to the clusterIP of the this service
+                port:
+                  number: 4001 #on the following port
+
