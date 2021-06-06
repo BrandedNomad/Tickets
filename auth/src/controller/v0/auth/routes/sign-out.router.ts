@@ -1,16 +1,19 @@
 /**
- *@overview This file contains all the endpoints for the User route
+ *@overview This file contains all the endpoints for the sign-out route
  */
 
 //imports
-//@ts-ignore
-import express,{Request,Response} from 'express'
+import express,{Request,Response,Router} from 'express'
 
 //Creating a router
-//@ts-ignore
-const signoutRouter:IRouterMatcher = express.Router();
+const signoutRouter:Router = express.Router();
 
-
+/**
+ * @route sign-out
+ * @purpose To sign-out logged-in users
+ * @path http://www.myticket.com/api/users/{api-version}/user/signout
+ * @method POST
+ */
 signoutRouter.post('/signout',(req:Request, res:Response)=>{
     res.send("success!")
 })
