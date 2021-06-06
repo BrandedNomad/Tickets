@@ -9,6 +9,8 @@
  * for database connection errors
  */
 export class DatabaseConnectionError extends Error {
+    //Response status code
+    statusCode: number = 500;
 
     //The error message
     reason = 'Error connecting to database';
@@ -21,5 +23,16 @@ export class DatabaseConnectionError extends Error {
         //the Error object in it's prototype chain
         Object.setPrototypeOf(this, DatabaseConnectionError.prototype);
 
+    }
+
+    /**
+     * @method serializeErrors
+     * @description Formats error messages into a normalized response
+     * @return {Object} The normalized error message
+     */
+    serializeErrors(){
+        return [
+            {message:this.reason}
+        ]
     }
 }
