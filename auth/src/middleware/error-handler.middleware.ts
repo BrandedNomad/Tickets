@@ -4,11 +4,8 @@
 
 //import statements
 import {NextFunction, Request,Response} from "express";
-import {RequestValidationError} from "../errors/request-validation.error";
-import {DatabaseConnectionError} from "../errors/database-connection.error";
+import {CustomError} from "../errors/custom.error";
 
-//an array of error types
-const errorTypes = [RequestValidationError, DatabaseConnectionError]
 
 /**
  * @function errorHandler
@@ -26,22 +23,11 @@ export const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    //checks if error is a RequestValidationError and handles the error accordingly
-    for(let i = 0; i < errorTypes.length; i++){
-        if(err instanceof errorTypes[i] ){
-            return res.status(err.statusCode).send({errors:err.serializeErrors()})
-        }
+    //checks if error is an instance of custom error and handles the error accordingly
+
+    if(err instanceof CustomError ){
+        return res.status(err.statusCode).send({errors:err.serializeErrors()})
     }
-
-
-    // if(err instanceof RequestValidationError ){
-    //     return res.status(err.statusCode).send({errors:err.serializeErrors()})
-    // }
-    //
-    // //checks if error is a DatabaseConnectionError and handles the error accordingly
-    // if(err instanceof DatabaseConnectionError){
-    //     return res.status(err.statusCode).send({errors:err.serializeErrors()})
-    // }
 
     //Any other type of error
     res.status(400).send({errors:[

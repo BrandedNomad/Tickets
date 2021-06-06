@@ -3,12 +3,15 @@
  * Error subclasses are necessary to normalize the responses across different microservices
  */
 
+//imports
+import {CustomError} from "./custom.error";
+
 /**
  * @class DatabaseConnectionError
  * @description extends the base class Error, and is used to normalize the error response
  * for database connection errors
  */
-export class DatabaseConnectionError extends Error {
+export class DatabaseConnectionError extends CustomError {
     //Response status code
     statusCode: number = 500;
 
@@ -16,7 +19,7 @@ export class DatabaseConnectionError extends Error {
     reason = 'Error connecting to database';
 
     constructor(){
-        super();
+        super('Error connecting to Database');
 
         //Only because we are extending a built in class
         //Ensures that objects created by RequestValidationError gets
