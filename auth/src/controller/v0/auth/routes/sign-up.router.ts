@@ -42,7 +42,6 @@ signupRouter.post('/signup',[
 
     //creating a new user
     console.log('Creating a user...')
-    throw new DatabaseConnectionError();
 
     res.send("success!")
 })

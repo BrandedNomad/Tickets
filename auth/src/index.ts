@@ -9,8 +9,9 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import indexRouter from "./controller/v0/index.router";
 import dotenv from 'dotenv'
-//const mongoose = require('mongoose');
+import mongoose from 'mongoose'
 
+//Access Environment Variables
 dotenv.config()
 
 //creating a server instance
@@ -34,26 +35,35 @@ server.use(bodyParser.json())
 server.use('/api/users/' + process.env.ROUTE_VERSION + '/', indexRouter);
 
 
-// //Connecting to the database and starting the index
-// mongoose.connect(process.env.DATABASE_CONNECTION_STRING, {useNewUrlParser:true, useUnifiedTopology:true,useCreateIndex:true,useFindAndModify:false},(error,response)=>{
-//
-//     if(error){
-//         return console.log("Could not connect to database",error)
-//     }
-//
-//     console.log("Successfully connected to database")
-//
-//     index.listen(port,()=>{
-//         if(!error){
-//             console.log("Server up and running on port: " + port)
-//         }else{
-//             console.log("Unable to start index: ", error)
-//         }
-//
-//     })
-// });
+/**
+ * @function start
+ * @description establishes a connection to the mongodb datatbase and starts the server
+ * @Returns {Promise<void>}
+ */
+const start = async():Promise<void> => {
+    try{
+        //@ts-ignore
+        //connecting to database
+        await mongoose.connect(process.env.DATABASE_CONNECTION_STRING, {
+            useNewUrlParser:true,
+            useUnifiedTopology:true,
+            useCreateIndex:true,
+            useFindAndModify:false
+        });
 
-server.listen(port,()=>{
-    console.log("Server up and running on port: " + port)
+        console.log("Successfully Connected to MongoDB")
+    }catch(error){
+        console.log(error)
+    }
 
-})
+    //starts the server
+    server.listen(port,()=>{
+        console.log("Server up and running on port: " + port)
+    })
+}
+
+//start the server
+start();
+
+
+
