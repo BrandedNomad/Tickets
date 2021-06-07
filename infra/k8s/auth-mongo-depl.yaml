@@ -1,0 +1,32 @@
+apiVersion: apps/v1 #deployment object is inside apps
+kind: Deployment #kind of configuration
+metadata:
+  name: auth-mongo-depl #name of deployment
+spec:
+  replicas: 1 # number of pods instances we want
+  selector: # take a look at all the pods created
+    matchLabels: #find all the pods with the following labels if they exist
+      app: auth-mongo #label name
+  template: # specifies the configuration of pods to be created if it doesn't exist
+    metadata:
+      labels: # give the pod the following label
+        app: auth-mongo
+    spec: #tells the pod how to behave
+      containers: # run the following containers inside the pod
+        - name: auth-mongo
+          image: mongo #pulls the mongo image from dockerhub
+---
+# ipcluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-mongo-srv #name of service
+spec: # tells service how to behave
+  selector:
+    app: auth-mongo #which pod to attach service to
+  type: ClusterIP #type of service
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017 #clusterIp port
+      targetPort: 27017 #default port for mongodb
