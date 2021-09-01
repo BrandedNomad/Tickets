@@ -23,6 +23,7 @@ interface UserModel extends mongoose.Model<UserDoc> {
     createNewUser(attrs: UserAttrs): UserDoc;
     generateAuthToken(user:UserDoc): string;
     findByCredentials(email:string,password:string):UserDoc
+    validateAuthToken(token:string):any
 }
 
 //an interface that describes the properties that a User Document has
@@ -74,6 +75,11 @@ const userSchema = new mongoose.Schema({
 
 //Instance methods
 
+/**
+ * @method generateAuthToken
+ * @description generates and stores a new jwt token
+ * @return
+ */
 userSchema.methods.generateAuthToken = async function(){
     //@ts-ignore
     const user:UserDoc = this;
@@ -106,6 +112,29 @@ userSchema.statics.generateAuthToken = function(user:UserDoc):string{
     return token
 }
 
+userSchema.statics.validateAuthToken = function(token:string){
+
+    try{
+        let payload = jwt.verify(
+            token,
+            process.env.JWT_SECRET!
+        );
+        return {currentUser: payload}
+    }catch(error){
+        return {currentUser: null}
+    }
+
+
+
+}
+
+/**
+ * @method findByCredentials
+ * @description uses user details to check whether that user exists or not
+ * @param {string} email The user's email address
+ * @param {string} password The user's password
+ * @return  user the user details (if the user exists)
+ */
 userSchema.statics.findByCredentials = async (email,password)=>{
 
     //Check if email exists
