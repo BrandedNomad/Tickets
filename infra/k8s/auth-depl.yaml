@@ -15,6 +15,12 @@ spec:
       containers: # run the following containers inside the pod
         - name: auth
           image: brandednomad/tickets-service-auth
+          env: #Sets the env variable for pod
+            - name: JWT_SECRET #name of env variable inside of pod
+              valueFrom: #tells k8 where to look for value of key
+                secretKeyRef: # gets is from the secret ref
+                  name: jwt-secret # the name of the k8 cluster key
+                  key: JWT_SECRET # the key to apply
 ---
 # ipcluster
 apiVersion: v1

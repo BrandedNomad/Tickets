@@ -6,6 +6,8 @@
 //imports
 import {CustomError} from "./custom.error";
 
+
+
 /**
  * @class BAdRequestError
  * @description extends the base class Error, and is used to normalize the error response

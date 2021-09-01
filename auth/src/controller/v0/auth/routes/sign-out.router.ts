@@ -5,6 +5,7 @@
 //imports
 import express,{Request,Response,Router} from 'express'
 
+
 //Creating a router
 const signoutRouter:Router = express.Router();
 
@@ -15,7 +16,11 @@ const signoutRouter:Router = express.Router();
  * @method POST
  */
 signoutRouter.post('/signout',(req:Request, res:Response)=>{
-    res.send("success!")
+
+
+
+    res.status(200).send("success!")
+
 })
 
 

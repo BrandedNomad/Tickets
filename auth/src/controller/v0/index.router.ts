@@ -4,7 +4,7 @@
  */
 
 //imports
-import express,{Router} from 'express';
+import express, {Request, Response, Router} from 'express';
 import 'express-async-errors';
 import currentuserRouter from './auth/routes/currentuser.router';
 import signinRouter from './auth/routes/sign-in.router'
@@ -12,6 +12,7 @@ import signoutRouter from './auth/routes/sign-out.router'
 import signupRouter from './auth/routes/sign-up.router'
 import {errorHandler} from "../../middleware/error-handler.middleware";
 import {NotFoundError} from "../../errors/not-found.error";
+import mongoose from "mongoose";
 
 
 //Creating a router object
@@ -24,6 +25,20 @@ indexRouter.use('/user', currentuserRouter);
 indexRouter.use('/user', signupRouter);
 indexRouter.use('/user', signinRouter);
 indexRouter.use('/user', signoutRouter);
+
+//Health-check
+indexRouter.get('/status',(req:Request,res:Response)=>{
+    const mongooseStatuses = ["disconnected","connected","connection","disconnecting"]
+    const dbStatus:number = parseInt(mongoose.STATES[mongoose.connection.readyState])
+
+    res.status(200).send({
+        dbStatus:mongooseStatuses[dbStatus]
+    })
+    //0: disconnected
+    //1: connected
+    //2: connection
+    //3: disconnecting
+})
 
 //When url doesn't match any of the provided paths
 //Throws a 404 not found error.

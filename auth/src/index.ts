@@ -5,21 +5,40 @@
  */
 
 //imports
-import express from 'express';
+import express, {Express,Response,Request} from 'express';
 import bodyParser from 'body-parser';
 import indexRouter from "./controller/v0/index.router";
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
+import cookieSession from "cookie-session";
+
 
 //Access Environment Variables
 dotenv.config()
 
 //creating a server instance
-const server = express()
+const server:Express = express()
+
+//To make express aware that it is behind an nginx proxy
+//and that it should still trust the traffic coming from that proxy
+//even though it is coming from a proxy
+//needed for accepting cookies
+server.set('trust proxy', true)
+
+
+//set port
 const port: string | undefined = process.env.PORT
 
 //configuring index to parse the body of requests
 server.use(bodyParser.json())
+
+//Configuration for Cookies
+server.use(
+    cookieSession({
+        signed: false,
+        secure: true //only used when user visits on https connection, otherwise defaults to http
+    })
+)
 
 
 //CORS POLICY middleware
@@ -34,6 +53,24 @@ server.use(bodyParser.json())
 //Setting up Root URI call
 server.use('/api/users/' + process.env.ROUTE_VERSION + '/', indexRouter);
 
+//Health-check
+server.get('/api/users/status',(req:Request,res:Response)=>{
+    const dbStatus:string = mongoose.STATES[mongoose.connection.readyState]
+    res.status(200).send({
+        dbStatus
+    })
+    //0: disconnected
+    //1: connected
+    //2: connection
+    //3: disconnecting
+})
+
+server.get('/api/users/metrics', (req: Request, res:Response)=>{
+
+
+    res.status(200).send("Total number of requests: ")
+})
+
 
 /**
  * @function start
@@ -41,6 +78,10 @@ server.use('/api/users/' + process.env.ROUTE_VERSION + '/', indexRouter);
  * @Returns {Promise<void>}
  */
 const start = async():Promise<void> => {
+    if(!process.env.JWT_SECRET){
+        throw new Error('JWT_SECRET must be defined')
+    }
+
     try{
         //@ts-ignore
         //connecting to database
@@ -51,9 +92,12 @@ const start = async():Promise<void> => {
             useFindAndModify:false
         });
 
-        console.log("Successfully Connected to MongoDB")
+        console.log("Successfully Connected to MongoDB", mongoose.connection.readyState)
+
+
+
     }catch(error){
-        console.log(error)
+        console.log(error.toString())
     }
 
     //starts the server

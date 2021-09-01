@@ -7,6 +7,7 @@
 import {ValidationError} from 'express-validator';
 import {CustomError} from "./custom.error";
 
+
 /**
  * @class RequestValidationError
  * @description extends the base class Error, and is used to normalize the error response

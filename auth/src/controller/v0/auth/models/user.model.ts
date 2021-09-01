@@ -3,9 +3,14 @@
  */
 
 //import
-import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
+import mongoose from 'mongoose';
 import {Password} from "../../../../utils/password.util";
+import jwt,{Secret} from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import {BadRequestError} from "../../../../errors/bad-request.error";
+
+//access env variables
+dotenv.config()
 
 //An interface that describes the properties that is required to create a new user.
 interface UserAttrs {
@@ -16,12 +21,15 @@ interface UserAttrs {
 //an interface that describes the properties that a user model has
 interface UserModel extends mongoose.Model<UserDoc> {
     createNewUser(attrs: UserAttrs): UserDoc;
+    generateAuthToken(user:UserDoc): string;
+    findByCredentials(email:string,password:string):UserDoc
 }
 
 //an interface that describes the properties that a User Document has
 interface UserDoc extends mongoose.Document {
     email: string;
     password: string;
+    tokens: object[];
     updatedAt: string;
     createdAt: string;
 }
@@ -40,12 +48,38 @@ const userSchema = new mongoose.Schema({
         trim:true,
         min:4
     },
-    tokens:{
+    tokens:[{
+        token:{
+            type:String
+        }
+    }]
 
+
+
+},{
+    timestamps:true,
+    toJSON:{ //specifies which information to return publicly
+        transform(doc,ret){
+            ret.id = ret._id;
+            delete ret._id;
+            delete ret.password;
+            //delete ret.tokens;
+            delete ret.createdAt;
+            delete ret.updatedAt;
+            delete ret.__v;
+        }
     }
-},{timestamps:true})
+})
+
 
 //Instance methods
+
+userSchema.methods.generateAuthToken = async function(){
+    //@ts-ignore
+    const user:UserDoc = this;
+    const token = jwt.sign({id:user.id,email: user.email},process.env.JWT_SECRET as Secret);
+    user.tokens = user.tokens.concat({token:token})
+}
 
 //Object methods
 /**
@@ -60,6 +94,43 @@ userSchema.statics.createNewUser = (attrs: UserAttrs) =>{
     return new User(attrs);
 };
 
+/**
+ * @method generateAuthToken
+ * @description generates and JWT authentication token
+ * @param {UserDoc} user The user for which the token is to be generated
+ * @return {string} JWT auth token
+ */
+userSchema.statics.generateAuthToken = function(user:UserDoc):string{
+    //@ts-ignore
+    const token = jwt.sign({id:user.id,email: user.email},process.env.JWT_SECRET as Secret);
+    return token
+}
+
+userSchema.statics.findByCredentials = async (email,password)=>{
+
+    //Check if email exists
+    const user = await User.findOne({email}).catch((error)=>{
+        console.log(error)
+    })
+
+    //Throw error if email not found
+    if(!user){
+        throw new BadRequestError('Invalid credentials')
+    }
+
+    //check if passwords match
+    const isMatch = await Password.compare(user.password,password).catch((error)=>{
+        console.log(error)
+    })
+
+    if(!isMatch){
+        throw new BadRequestError('Invalid credentials')
+    }
+
+    //Return user if found
+    return user
+}
+
 //MIDDLEWARE
 
 /**
@@ -71,7 +142,6 @@ userSchema.pre('save', async function(next){
     //@ts-ignore
     const user:UserDoc = this
     if(user.isModified('password')){
-        //user.password = await bcrypt.hash(user.password,8)
         user.password = await Password.toHash(user.password)
     }
     next()
