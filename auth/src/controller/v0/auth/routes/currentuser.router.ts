@@ -6,6 +6,8 @@
 //imports
 import express,{Request,Response,Router} from 'express'
 import ModelV0 from "../../index.model";
+import {currentUser} from "../../../../middleware/current-user.middleware";
+import {requireAuth} from "../../../../middleware/require-auth.middleware";
 
 //Creating an express router
 const currentuserRouter:Router = express.Router();
@@ -16,22 +18,8 @@ const currentuserRouter:Router = express.Router();
  * @path https://www.myticket.com/api/users/{api-version}/user/currentuser
  * @method GET
  */
-currentuserRouter.get('/currentuser',(req:Request, res:Response)=>{
-
-    //check if cookie exists
-    if(!req.session || !req.session.jwt){ //can also use !req.session?.jwt
-        return res.send({currentUser: null});
-    }
-
-    //validates token
-    const payload = ModelV0.User.validateAuthToken(req.session.jwt)
-    if(payload.currentUser === null){
-        res.status(404).send(payload)
-    }else{
-        res.status(200).send(payload)
-    }
-
-
+currentuserRouter.get('/currentuser',currentUser, requireAuth, (req:Request, res:Response)=>{
+    res.send({currentUser: req.currentUser || null});
 })
 
 //exports
