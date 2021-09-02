@@ -35,7 +35,7 @@ server.use(bodyParser.json())
 server.use(
     cookieSession({
         signed: false,
-        secure: true //only used when user visits on https connection, otherwise defaults to http
+        secure: process.env.NODE_ENV !== 'test' //only used when user visits on https connection, otherwise defaults to http
     })
 )
 
