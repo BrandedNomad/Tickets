@@ -25,7 +25,7 @@ interface UserModel extends mongoose.Model<UserDoc> {
     generateAuthToken(user:UserDoc): string;
     findByCredentials(email:string,password:string):UserDoc
     validateAuthToken(token:string):any
-    // removeToken(token:any):any
+    removeToken(token:any):any
 }
 
 //an interface that describes the properties that a User Document has
@@ -136,14 +136,14 @@ userSchema.statics.validateAuthToken = function(token:string){
 /**
  *
  */
-// userSchema.statics.removeToken = async function(token){
-//     let details = User.validateAuthToken(token)
-//     let user:any = await User.findOne({_id:details.currentUser.id})
-//     user.tokens = user.tokens.filter((item:any)=>{
-//         return item.token !== jwt
-//     })
-//     user.save()
-// }
+userSchema.statics.removeToken = async function(token){
+    let details = User.validateAuthToken(token)
+    let user:any = await User.findOne({_id:details.currentUser.id})
+    user.tokens = user.tokens.filter((item:any)=>{
+        return item.token !== jwt
+    })
+    user.save()
+}
 
 /**
  * @method findByCredentials

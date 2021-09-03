@@ -22,13 +22,7 @@ signoutRouter.post('/signout',async (req:Request, res:Response)=>{
     //remove token from stored tokens
     // @ts-ignore
     let jwt = req.session.jwt
-    // ModelV0.User.removeToken(jwt)
-    let details = ModelV0.User.validateAuthToken(jwt)
-    let user:any = await ModelV0.User.findOne({_id:details.currentUser.id})
-    user.tokens = user.tokens.filter((item:any)=>{
-        return item.token !== jwt
-    })
-    user.save()
+    ModelV0.User.removeToken(jwt)
 
     //remove cookie from header
     req.session = null

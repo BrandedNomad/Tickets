@@ -8,11 +8,24 @@ import {server} from "../../../../../app";
 
 it('it clears the cookie after signing out', async()=>{
 
-    return request(server)
-        .post('/api/users/v0/user/signin')
+    const authResponse = await request(server)
+        .post('/api/users/v0/user/signup')
         .send({
-            email:'test05908@mail.com',
-            password:'test05@mail.com'
+            email:'test999@mail.com',
+            password:'test999@mail.com'
         })
-        .expect(400)
+        .expect(201)
+
+    const cookie = authResponse.get('Set-Cookie')
+
+    const response =  await request(server)
+        .post('/api/users/v0/user/signout')
+        .set('Cookie',cookie)
+        .send({})
+        .expect(200)
+
+    expect(response.get('Set-Cookie')[0]).toEqual(
+        'express:sess=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly'
+    )
+
 })
