@@ -1,3 +1,7 @@
+/**
+ * @overview This file contains all the tests for the signup route
+ */
+
 import request from 'supertest';
 import {server} from "../../../../../app";
 

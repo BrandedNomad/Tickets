@@ -19,22 +19,15 @@ const signoutRouter:Router = express.Router();
  */
 signoutRouter.post('/signout',async (req:Request, res:Response)=>{
 
-    //get session token
+    //remove token from stored tokens
     // @ts-ignore
     let jwt = req.session.jwt
-
-    //find user details
+    // ModelV0.User.removeToken(jwt)
     let details = ModelV0.User.validateAuthToken(jwt)
-
-    //use details to find User
     let user:any = await ModelV0.User.findOne({_id:details.currentUser.id})
-
-    //remove token from stored tokens
     user.tokens = user.tokens.filter((item:any)=>{
         return item.token !== jwt
     })
-
-    //save user
     user.save()
 
     //remove cookie from header

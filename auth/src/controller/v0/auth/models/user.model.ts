@@ -9,6 +9,7 @@ import jwt,{Secret} from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import {BadRequestError} from "../../../../errors/bad-request.error";
 
+
 //access env variables
 dotenv.config()
 
@@ -24,6 +25,7 @@ interface UserModel extends mongoose.Model<UserDoc> {
     generateAuthToken(user:UserDoc): string;
     findByCredentials(email:string,password:string):UserDoc
     validateAuthToken(token:string):any
+    // removeToken(token:any):any
 }
 
 //an interface that describes the properties that a User Document has
@@ -112,6 +114,12 @@ userSchema.statics.generateAuthToken = function(user:UserDoc):string{
     return token
 }
 
+/**
+ * @method validateAuthToken
+ * @description checks if a given toke is valid or not
+ * @param token
+ * @return object that contains the decoded token or false
+ */
 userSchema.statics.validateAuthToken = function(token:string){
 
     try{
@@ -123,10 +131,19 @@ userSchema.statics.validateAuthToken = function(token:string){
     }catch(error){
         return {currentUser: null}
     }
-
-
-
 }
+
+/**
+ *
+ */
+// userSchema.statics.removeToken = async function(token){
+//     let details = User.validateAuthToken(token)
+//     let user:any = await User.findOne({_id:details.currentUser.id})
+//     user.tokens = user.tokens.filter((item:any)=>{
+//         return item.token !== jwt
+//     })
+//     user.save()
+// }
 
 /**
  * @method findByCredentials
