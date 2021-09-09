@@ -136,7 +136,7 @@ userSchema.statics.validateAuthToken = function(token:string){
 /**
  *
  */
-userSchema.statics.removeToken = async function(token){
+userSchema.statics.removeToken = async function(token:any){
     let details = User.validateAuthToken(token)
     let user:any = await User.findOne({_id:details.currentUser.id})
     user.tokens = user.tokens.filter((item:any)=>{

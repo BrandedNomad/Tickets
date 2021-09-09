@@ -41,8 +41,6 @@ signupRouter.post('/signup',[
     //check if user allready exist
     const existingUser = await ModelV0.User.findOne({email});
     if(existingUser){
-        console.log('Email in use');
-
         throw new BadRequestError('Email already exists! Please provide a different email')
     }
 

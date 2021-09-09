@@ -8,23 +8,21 @@ import {server} from "../../../../../app";
 
 it('it responds with details of the current user', async ()=>{
 
-    const authResponse = await request(server)
-        .post('/api/users/v0/user/signup')
-        .send({
-            email:'test9999@mail.com',
-            password:'test9999@mail.com'
-        })
-        .expect(201)
-
     //get the cookie from first response to be set as header on second response
-    const cookie = authResponse.get('Set-Cookie')
+    const cookie = await global.signin();
 
     const response =  await request(server)
         .get('/api/users/v0/user/currentuser')
         .set('Cookie', cookie)
         .send()
         .expect(200)
+})
 
-    console.log(response.body)
+it('responds with null if not authenticated',async ()=>{
+    const response = await request(server)
+        .get('/api/users/v0/user/currentuser')
+        .send()
+        .expect(401)
 
+    expect(response.body.currentUser === null)
 })

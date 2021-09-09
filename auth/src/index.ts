@@ -1,12 +1,14 @@
 import mongoose from "mongoose";
 import {server} from "./app";
 
+
+
 //set port
 const port: string | undefined = process.env.PORT
 
 /**
  * @function start
- * @description establishes a connection to the mongodb datatbase and starts the server
+ * @description establishes a connection to the mongodb database and starts the server
  * @Returns {Promise<void>}
  */
 const start = async():Promise<void> => {
@@ -28,7 +30,7 @@ const start = async():Promise<void> => {
 
 
 
-    }catch(error){
+    }catch(error:any){
         console.log(error.toString())
     }
 

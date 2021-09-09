@@ -14,7 +14,6 @@ import {errorHandler} from "../../middleware/error-handler.middleware";
 import {NotFoundError} from "../../errors/not-found.error";
 import mongoose from "mongoose";
 
-
 //Creating a router object
 const indexRouter:Router = express.Router();
 
