@@ -1,0 +1,33 @@
+apiVersion: apps/v1 #deployment object is inside apps
+kind: Deployment #kind of configuration
+metadata:
+  name: client-depl #name of deployment
+spec:
+  replicas: 1
+  selector: # take a look at all the pods created
+    matchLabels: #find all the pods with the following labels
+      app: client #label name
+  template: # specifies the configuration of pods to be created
+    metadata:
+      labels: # give the pod the following label
+        app: client
+    spec: #tells the pod how to behave
+      containers: # run the following containers inside the pod
+        - name: client
+          image: brandednomad/tickets-client
+
+---
+# ipcluster service
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-srv #name of service
+spec: # tells service how to behave
+  selector:
+    app: client #which pod to attach service to
+  type: ClusterIP #type of service
+  ports:
+    - name: client
+      protocol: TCP
+      port: 3000 #clusterIp port
+      targetPort: 3000 #port specified on the app
