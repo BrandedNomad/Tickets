@@ -1,16 +1,16 @@
 /**
- * @overview This file contains the signup page
+ * @overview This file contains the sign-in page
  */
 import {useState} from 'react'
 import Router from 'next/router'
 import useRequest from "../../hooks/use-request";
 
 /**
- * @page Signup
- * @description A page where new users can signup for an account using their credentials
+ * @page Sign In
+ * @description A page where existing users can sign-in using their credentials
  * @return {JSX.Element}
  */
-const signup = ()=>{
+const signin = ()=>{
 
     //keeps track of user credentials
     const [email, setEmail] =  useState('')
@@ -18,7 +18,7 @@ const signup = ()=>{
 
     //creates a client object that can be called when the user submits the form
     const {doRequest, errors, onSuccess} = useRequest({
-        url:"/api/users/v0/user/signup",
+        url:"/api/users/v0/user/signin",
         method:'post',
         body:{
             email,
@@ -29,16 +29,16 @@ const signup = ()=>{
         }
     })
 
-    //sends user credentials to auth server to create a new account
+    //Sends user credentials to auth server for validation
     const submit = async (event)=>{
         event.preventDefault()
         await doRequest();
     }
 
-    //returns jsx component
+    //returns the jsx component
     return (
         <form onSubmit={submit}>
-            <h1>Sign Up</h1>
+            <h1>Sign In</h1>
             <div className ="form-group">
                 <label>Email Address</label>
                 <input
@@ -66,4 +66,4 @@ const signup = ()=>{
     )
 }
 
-export default signup
+export default signin;
