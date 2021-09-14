@@ -19,7 +19,8 @@ const currentuserRouter:Router = express.Router();
  * @method GET
  */
 currentuserRouter.get('/currentuser',currentUser, requireAuth, (req:Request, res:Response)=>{
-    res.send({currentUser: req.currentUser || null});
+    console.log("You made it", req.currentUser)
+    res.status(200).send({currentUser: req.currentUser || null});
 })
 
 //exports

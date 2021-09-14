@@ -27,6 +27,7 @@ export const currentUser = (req:Request, res:Response, next:NextFunction)=>{
     const userPayload = payload.currentUser as UserPayload
     if(userPayload === null){
         //do nothing
+
     }else{
         //set current user
         req.currentUser = userPayload
