@@ -23,8 +23,16 @@ LandingPage.getInitialProps = async (context) => {
 
     //check if current user is authenticated
     const client = buildClient(context)
-    const {data} = await client.get('/api/users/v0/user/currentuser')
-    return data
+    const response = await client.get('/api/users/v0/user/currentuser')
+        .catch((error)=>{
+            console.log(error)
+        })
+
+    if(response !== undefined){
+        return response.data
+    }else {
+        return {}
+    }
 }
 
 
